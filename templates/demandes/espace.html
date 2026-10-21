@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block titre %}Mon espace client{% endblock %}
+{% block contenu %}
+<div class="page-heading"><div><p class="eyebrow">ESPACE CLIENT</p><h1>Mon dossier{% if client %}, {{ client.prenom }}{% endif %}<span class="heading-period">.</span></h1><p class="heading-note">Contrats, échéances et paiements associés à votre compte.</p></div><a class="button button-primary" href="{% url 'demandes:creer' %}">Nouvelle demande</a></div>
+{% if not client %}<section class="client-link-notice"><strong>Votre dossier est en cours de rattachement.</strong><span>Contactez l’équipe pour associer votre compte à votre fiche client.</span></section>{% endif %}
+{% if client %}
+<section class="client-contracts" aria-label="Mes contrats">
+	<div class="client-section-heading"><div><p class="eyebrow">ENGAGEMENTS</p><h2>Mes contrats</h2></div><span>{{ contrats|length }} dossier{% if contrats|length != 1 %}s{% endif %}</span></div>
+	{% for contrat in contrats %}
+	<article class="paper-panel client-contract">
+		<header class="client-contract-heading"><div><p class="eyebrow">CONTRAT {{ contrat.numero }}</p><h3>{{ contrat.bien.marque }} {{ contrat.bien.modele }}</h3></div><span class="status-pill {% if contrat.statut == 'actif' %}status-good{% elif contrat.statut == 'saisi' %}status-danger{% endif %}">{{ contrat.get_statut_display }}</span></header>
+		<p><a class="text-link" href="{% url 'contrats:document' contrat.pk %}">Télécharger le contrat à signer</a></p>
+		{% if contrat.en_retard %}<div class="client-alert client-alert-danger"><strong>Échéance dépassée</strong><span>La période de grâce de {{ contrat.jours_de_grace }} jours est échue. Contactez l’équipe rapidement au {{ identite_site.telephone }}.</span></div>{% elif contrat.echeance_proche %}<div class="client-alert client-alert-warn"><strong>Échéance proche</strong><span>Votre échéance est le {{ contrat.date_echeance|date:"d/m/Y" }}.</span></div>{% endif %}
+		<dl class="client-contract-facts">
+			<div><dt>Capital restant</dt><dd>{{ contrat.capital_restant }} {{ contrat.devise }}</dd></div>
+			<div><dt>Taux mensuel</dt><dd>{{ contrat.taux_mensuel }} %</dd></div>
+			<div><dt>Échéance</dt><dd>{{ contrat.date_echeance|date:"d/m/Y" }}</dd></div>
+			<div><dt>Numéro de série</dt><dd>{{ contrat.bien.numero_serie|default:"Non renseigné" }}</dd></div>
+			<div><dt>État du bien</dt><dd>{% if contrat.statut == 'actif' %}En garde{% elif contrat.statut == 'solde' %}Restitué{% else %}Dossier transmis au personnel{% endif %}</dd></div>
+			{% if contrat.statut == 'actif' %}<div class="client-redemption"><dt>Estimation de rachat aujourd’hui</dt><dd>{{ contrat.montant_rachat_estime }} {{ contrat.devise }}</dd><small>Capital restant + intérêt mensuel contractuel. À confirmer avec le personnel.</small></div>{% endif %}
+		</dl>
+		<p class="client-legal-note">Après l’échéance, le délai de grâce prévu au contrat est de {{ contrat.jours_de_grace }} jours. Toute suite concernant le bien suit les conditions convenues au contrat.</p>
+		<div class="client-payment-history"><h4>Historique des paiements</h4>
+			{% with paiements=contrat.paiements.all %}
+				{% if paiements %}<div class="table-scroll"><table><thead><tr><th>Date</th><th>Opération</th><th>Montant reçu</th><th>Reçu</th></tr></thead><tbody>{% for paiement in paiements %}<tr><td>{{ paiement.recu_le|date:"d/m/Y H:i" }}</td><td>{{ paiement.get_type_display }}</td><td>{{ paiement.montant }} {{ paiement.devise_recue }}</td><td><a class="text-link" href="{% url 'contrats:recu' contrat.pk paiement.pk %}">Télécharger le PDF</a></td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="client-empty-line">Aucun paiement enregistré pour ce contrat.</p>{% endif %}
+			{% endwith %}
+		</div>
+	</article>
+	{% empty %}<div class="paper-panel client-empty-contracts"><p>Aucun contrat n’est associé à votre fiche pour le moment.</p></div>{% endfor %}
+</section>
+{% endif %}
+<section class="paper-panel data-panel client-demands" id="demandes"><div class="client-section-heading"><div><p class="eyebrow">SUIVI</p><h2>Mes demandes</h2></div><a class="text-link" href="{% url 'demandes:creer' %}">Nouvelle demande <span>→</span></a></div>{% if demandes %}<div class="table-scroll"><table><thead><tr><th>Référence</th><th>Bien</th><th>Montant demandé</th><th>Statut</th><th>Soumise le</th></tr></thead><tbody>{% for demande in demandes %}<tr><td><a class="table-primary-link" href="{% url 'demandes:detail' demande.reference %}">{{ demande.reference }}</a></td><td>{{ demande.marque }} {{ demande.modele }}</td><td>{{ demande.montant_souhaite }} {{ demande.devise }}</td><td><span class="status-pill {% if demande.statut == 'acceptee' %}status-good{% elif demande.statut == 'refusee' %}status-danger{% elif demande.statut == 'a_etudier' %}status-warn{% endif %}">{{ demande.get_statut_display }}</span></td><td>{{ demande.cree_le|date:"d/m/Y" }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><span class="empty-mark">＋</span><p>Vous n’avez pas encore présenté de bien.</p><a class="text-link" href="{% url 'demandes:creer' %}">Présenter un objet en ligne <span>→</span></a></div>{% endif %}</section>
+{% endblock %}

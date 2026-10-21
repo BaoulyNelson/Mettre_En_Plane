@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class BiensConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "applications.biens"
+    verbose_name = "Biens"

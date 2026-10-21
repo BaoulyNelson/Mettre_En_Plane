@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block titre %}Sécurité du compte{% endblock %}
+{% block contenu %}
+<div class="page-heading"><div><p class="eyebrow">COMPTE · SÉCURITÉ</p><h1>{% if request.resolver_match.url_name == 'password_change_done' %}Mot de passe modifié{% elif request.resolver_match.url_name == 'password_reset_complete' %}Accès rétabli{% else %}Vérifiez votre courriel{% endif %}<span class="heading-period">.</span></h1></div></div>
+<section class="paper-panel account-message-panel"><span class="empty-mark">✓</span><p>{% if request.resolver_match.url_name == 'password_change_done' %}Votre nouveau mot de passe est enregistré.{% elif request.resolver_match.url_name == 'password_reset_complete' %}Votre mot de passe a été réinitialisé. Vous pouvez vous connecter avec le nouveau.{% else %}Si un compte actif correspond à cette adresse, un lien de réinitialisation a été envoyé. Vérifiez aussi les courriers indésirables.{% endif %}</p><a class="button button-primary" href="{% if request.resolver_match.url_name == 'password_reset_complete' %}{% url 'connexion' %}{% else %}{% url 'tableau_de_bord:accueil' %}{% endif %}">{% if request.resolver_match.url_name == 'password_reset_complete' %}Se connecter{% else %}Retour au tableau de bord{% endif %}</a></section>
+{% endblock %}

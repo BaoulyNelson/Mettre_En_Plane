@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block titre %}Mon profil{% endblock %}
+{% block contenu %}
+<div class="page-heading"><div><p class="eyebrow">ESPACE PERSONNEL</p><h1>Mon profil<span class="heading-period">.</span></h1><p class="heading-note">Coordonnées et photo visibles dans votre espace.</p></div></div>
+<section class="paper-panel form-panel account-form-panel">
+    <div class="profile-photo-current">{% if profil_utilisateur.photo %}<img src="{{ profil_utilisateur.photo.url }}" alt="Photo de profil actuelle">{% else %}<span>{{ request.user.first_name|first|default:request.user.username|first|upper }}</span>{% endif %}</div>
+    <form method="post" enctype="multipart/form-data" class="data-form" novalidate>{% csrf_token %}
+        {% if informations.non_field_errors %}<div class="form-errors">{{ informations.non_field_errors }}</div>{% endif %}
+        <div class="form-grid">{% for field in informations %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}{% for field in formulaire_profil %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}</div>
+        <div class="form-actions"><button class="button button-primary" type="submit">Enregistrer mon profil</button></div>
+    </form>
+</section>
+{% endblock %}

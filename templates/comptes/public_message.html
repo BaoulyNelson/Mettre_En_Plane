@@ -1,0 +1,21 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sécurité du compte · {{ identite_site.nom }}</title>
+    <link rel="stylesheet" href="{% static 'css/application.css' %}?v=2">
+</head>
+<body class="login-page">
+    <div class="scene" aria-hidden="true"><span class="scene-cloud cloud-one"></span><span class="scene-cloud cloud-two"></span><span class="scene-cloud cloud-three"></span><img class="scene-horizon" src="{% static 'images/horizon.svg' %}" alt=""></div>
+    <main class="login-wrap">
+        <div class="login-brand"><span class="brand-stamp">MP</span><p class="eyebrow">COMPTE · SÉCURITÉ</p><h1>{{ identite_site.nom }}</h1></div>
+        <section class="paper-panel login-panel">
+            <h2>{% if request.resolver_match.url_name == 'password_reset_complete' %}Accès rétabli{% else %}Vérifiez votre courriel{% endif %}</h2>
+            <p class="account-public-note">{% if request.resolver_match.url_name == 'password_reset_complete' %}Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter avec le nouveau.{% else %}Si un compte actif correspond à cette adresse, un lien de réinitialisation a été envoyé. Vérifiez également les courriers indésirables.{% endif %}</p>
+            <a class="button button-primary button-wide" href="{% url 'connexion' %}">Retour à la connexion</a>
+        </section>
+    </main>
+</body>
+</html>

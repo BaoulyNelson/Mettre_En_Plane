@@ -1,0 +1,1 @@
+"""Encaissements et opérations financières."""

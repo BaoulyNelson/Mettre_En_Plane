@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sécurité du compte · {{ identite_site.nom }}</title>
+    <link rel="stylesheet" href="{% static 'css/application.css' %}?v=2">
+    <script defer src="{% static 'js/application.js' %}?v=5"></script>
+</head>
+<body class="login-page">
+    <div class="scene" aria-hidden="true"><span class="scene-cloud cloud-one"></span><span class="scene-cloud cloud-two"></span><span class="scene-cloud cloud-three"></span><img class="scene-horizon" src="{% static 'images/horizon.svg' %}" alt=""></div>
+    <main class="login-wrap">
+        <div class="login-brand"><a class="auth-brand" href="{% url 'connexion' %}">{% if identite_site.logo %}<img src="{{ identite_site.logo.url }}" alt="">{% else %}<span class="brand-stamp">MP</span>{% endif %}<span>{{ identite_site.nom }}</span></a><p class="eyebrow">COMPTE · SÉCURITÉ</p><h1>{{ identite_site.nom }}</h1><p>Retrouvez un accès sécurisé à votre espace.</p></div>
+        <section class="paper-panel login-panel">
+            {% if request.resolver_match.url_name == 'password_reset_confirm' and not validlink %}
+                <h2>Lien expiré</h2><p class="account-public-note">Ce lien de réinitialisation n’est plus valide. Demandez-en un nouveau.</p><a class="button button-primary button-wide" href="{% url 'password_reset' %}">Demander un nouveau lien</a>
+            {% else %}
+                <h2>{% if request.resolver_match.url_name == 'password_reset_confirm' %}Choisir un nouveau mot de passe{% else %}Mot de passe oublié{% endif %}</h2>
+                <form method="post" class="data-form" novalidate>{% csrf_token %}
+                    {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+                    {% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="field-help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+                    <button class="button button-primary button-wide" type="submit">{% if request.resolver_match.url_name == 'password_reset_confirm' %}Enregistrer le nouveau mot de passe{% else %}Envoyer le lien sécurisé{% endif %}</button>
+                </form>
+            {% endif %}
+        </section>
+        <a class="forgot-password" href="{% url 'connexion' %}">Retour à la connexion</a>
+    </main>
+</body>
+</html>

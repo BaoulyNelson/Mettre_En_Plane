@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block titre %}Mettre un bien en gage{% endblock %}
+{% block contenu %}
+<div class="page-heading"><div><p class="eyebrow">DEMANDE EN LIGNE · ÉTAPE 1</p><h1>Présenter un bien<span class="heading-period">.</span></h1><p class="heading-note">Cette demande sera étudiée par l’équipe; elle ne crée pas automatiquement un prêt.</p></div><a class="button button-quiet" href="{% url 'demandes:espace' %}">Mes demandes</a></div>
+<section class="paper-panel form-panel public-request-panel">
+    <form method="post" enctype="multipart/form-data" class="data-form" novalidate>{% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="form-grid">{% for field in form %}<div class="form-field {% if field.name == 'description' or field.name == 'accepte_conditions' %}field-wide{% endif %} {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">{% if field.field.widget.input_type == 'checkbox' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>{{ field }}{% endif %}{% if field.help_text %}<small class="field-help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}</div>
+        <div class="request-privacy-note">Ne transmettez jamais de mot de passe, code de déverrouillage ni donnée bancaire.</div>
+        <div class="form-actions"><button class="button button-primary" type="submit">Envoyer pour étude</button></div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <title>{% block titre %}{{ identite_site.nom }}{% endblock %} · {{ identite_site.nom }}</title>
+    <meta name="description" content="{% block description %}{{ identite_site.slogan|default:identite_site.nom }} · {{ identite_site.adresse }} · {{ identite_site.telephone }}{% endblock %}">
+
+    <!-- Application privée (données clients) : ne pas indexer. Surcharger le bloc "robots" sur une page publique. -->
+    <meta name="robots" content="{% block robots %}noindex, nofollow, noarchive, nosnippet, noimageindex{% endblock %}">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <link rel="canonical" href="{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
+
+    <!-- Apparence navigateur / application installée -->
+    <meta name="application-name" content="{{ identite_site.nom }}">
+    <meta name="theme-color" content="#9dc0e4">
+    <meta name="color-scheme" content="light">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="{{ identite_site.nom }}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Icônes et manifeste -->
+    {% if identite_site.logo %}<link rel="icon" href="{{ identite_site.logo.url }}">{% endif %}
+
+    <!-- Open Graph (aperçu WhatsApp, Facebook, Telegram, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ identite_site.nom }}">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:title" content="{% block og_titre %}{{ identite_site.nom }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ identite_site.slogan }}{% endblock %}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    {% if identite_site.logo %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ identite_site.logo.url }}">{% endif %}
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ identite_site.nom }}">
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ identite_site.nom }}">
+    <meta name="twitter:description" content="{{ identite_site.slogan }}">
+    {% if identite_site.logo %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ identite_site.logo.url }}">{% endif %}
+
+    <link rel="stylesheet" href="{% static 'css/application.css' %}?v=5">
+    <script defer src="{% static 'js/application.js' %}?v=6"></script>
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <div class="scene" aria-hidden="true">
+        <span class="scene-cloud cloud-one"></span>
+        <span class="scene-cloud cloud-two"></span>
+        <span class="scene-cloud cloud-three"></span>
+        <img class="scene-horizon" src="{% static 'images/horizon.svg' %}" alt="">
+    </div>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="brand" href="{% if request.user.is_staff %}{% url 'tableau_de_bord:accueil' %}{% else %}{% url 'demandes:espace' %}{% endif %}">
+                {% if identite_site.logo %}<img class="brand-logo" src="{{ identite_site.logo.url }}" alt="Logo {{ identite_site.nom }}">{% else %}<span class="brand-stamp">MP</span>{% endif %}
+                <span><strong>{{ identite_site.nom }}</strong><small>{{ identite_site.slogan|default:"GESTION DE PRÊTS" }}</small></span>
+            </a>
+            <div class="nav-label">ESPACE DE TRAVAIL</div>
+            <nav class="main-nav" aria-label="Navigation principale">
+                {% if request.user.is_staff %}
+                <a href="{% url 'tableau_de_bord:accueil' %}" class="{% if request.resolver_match.app_name == 'tableau_de_bord' %}is-active{% endif %}"><span class="nav-mark">01</span>Vue d’ensemble</a>
+                <a href="{% url 'clients:liste' %}" class="{% if request.resolver_match.app_name == 'clients' %}is-active{% endif %}"><span class="nav-mark">02</span>Clients</a>
+                <a href="{% url 'biens:liste' %}" class="{% if request.resolver_match.app_name == 'biens' %}is-active{% endif %}"><span class="nav-mark">03</span>Biens en garantie</a>
+                <a href="{% url 'contrats:liste' %}" class="{% if request.resolver_match.app_name == 'contrats' %}is-active{% endif %}"><span class="nav-mark">04</span>Contrats</a>
+                <a href="{% url 'inventaire:liste' %}" class="{% if request.resolver_match.app_name == 'inventaire' %}is-active{% endif %}"><span class="nav-mark">05</span>Revente</a>
+                <a href="{% url 'demandes:liste_personnel' %}" class="{% if request.resolver_match.url_name == 'liste_personnel' or request.resolver_match.url_name == 'traiter' %}is-active{% endif %}"><span class="nav-mark">06</span>Demandes en ligne</a>
+                {% else %}
+                <a href="{% url 'demandes:espace' %}" class="{% if request.resolver_match.url_name == 'espace' or request.resolver_match.url_name == 'detail' %}is-active{% endif %}"><span class="nav-mark">01</span>Mon espace</a>
+                <a href="{% url 'demandes:creer' %}" class="{% if request.resolver_match.url_name == 'creer' %}is-active{% endif %}"><span class="nav-mark">02</span>Nouvelle demande</a>
+                {% endif %}
+            </nav>
+            <div class="sidebar-section-label">COMPTE</div>
+            <nav class="account-nav" aria-label="Gestion du compte">
+                <a href="{% url 'accueil_public' %}">Accueil public</a>
+                {% if request.user.is_superuser %}<a href="{% url 'admin:index' %}" class="{% if request.resolver_match.app_name == 'admin' %}is-active{% endif %}">Administration Django</a>{% endif %}
+                <a href="{% url 'comptes:profil' %}" class="{% if request.resolver_match.app_name == 'comptes' and request.resolver_match.url_name == 'profil' %}is-active{% endif %}">Mon profil</a>
+                <a href="{% url 'password_change' %}" class="{% if request.resolver_match.url_name == 'password_change' %}is-active{% endif %}">Sécurité et mot de passe</a>
+                {% if request.user.is_staff %}<a href="{% url 'comptes:site' %}" class="{% if request.resolver_match.url_name == 'site' %}is-active{% endif %}">Identité du site</a>{% endif %}
+            </nav>
+            <div class="sidebar-foot">
+                <span class="status-dot"></span>
+                <span><strong>Espace sécurisé</strong><small>Session active</small></span>
+                <form method="post" action="{% url 'deconnexion' %}" class="logout-form">{% csrf_token %}<button class="logout-button" title="Se déconnecter" aria-label="Se déconnecter">↗</button></form>
+            </div>
+        </aside>
+        <div class="workspace">
+            <header class="topbar">
+                <div class="topbar-kicker{% if identite_site.logo %} topbar-has-logo{% endif %}">
+                    <span class="topbar-brand-name">Mete nan plàn · HAÏTI</span>
+                    {% if identite_site.logo %}<img class="topbar-mobile-logo" src="{{ identite_site.logo.url }}" alt="Logo {{ identite_site.nom }}">{% endif %}
+                </div>
+                <div class="topbar-right"><span class="today-date">{% now "l j F Y" %}</span><a class="user-avatar" href="{% url 'comptes:profil' %}" title="Mon profil">{% if profil_utilisateur and profil_utilisateur.photo %}<img src="{{ profil_utilisateur.photo.url }}" alt="">{% else %}{{ request.user.first_name|first|default:request.user.username|first|upper }}{% endif %}</a></div>
+            </header>
+            <main class="page-content">
+                {% if messages %}<div class="flash-stack">{% for message in messages %}<div class="flash-message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+                {% block contenu %}{% endblock %}
+            </main>
+            <footer class="page-footer"><span>{{ identite_site.nom }}</span><span>{{ identite_site.slogan|default:"Clarté dans chaque engagement." }}</span><span>{{ identite_site.telephone }} {{ identite_site.email }}</span></footer>
+        </div>
+    </div>
+    <nav class="mobile-dock" aria-label="Navigation rapide">
+        {% if request.user.is_staff %}
+        <a href="{% url 'tableau_de_bord:accueil' %}" class="{% if request.resolver_match.app_name == 'tableau_de_bord' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">⌂</span><span>Accueil</span></a>
+        <a href="{% url 'clients:liste' %}" class="{% if request.resolver_match.app_name == 'clients' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">◎</span><span>Clients</span></a>
+        <a href="{% url 'contrats:liste' %}" class="{% if request.resolver_match.app_name == 'contrats' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">▤</span><span>Contrats</span></a>
+        <a href="{% url 'inventaire:liste' %}" class="{% if request.resolver_match.app_name == 'inventaire' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">▣</span><span>Revente</span></a>
+        {% else %}
+        <a href="{% url 'demandes:espace' %}" class="{% if request.resolver_match.url_name == 'espace' or request.resolver_match.url_name == 'detail' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">⌂</span><span>Mon espace</span></a>
+        <a href="{% url 'demandes:creer' %}" class="{% if request.resolver_match.url_name == 'creer' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">＋</span><span>Déposer</span></a>
+        <a href="{% url 'comptes:profil' %}" class="{% if request.resolver_match.url_name == 'profil' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">◎</span><span>Profil</span></a>
+        <a href="{% url 'password_change' %}" class="{% if request.resolver_match.url_name == 'password_change' %}is-active{% endif %}"><span class="dock-icon" aria-hidden="true">◇</span><span>Sécurité</span></a>
+        {% endif %}
+        <button type="button" class="dock-more" data-open-more aria-expanded="false" aria-controls="mobile-more-panel"><span class="dock-icon" aria-hidden="true">＋</span><span>Plus</span></button>
+    </nav>
+    <button type="button" class="drawer-scrim" data-close-more aria-label="Fermer le menu Plus"></button>
+    <aside class="mobile-drawer" id="mobile-more-panel" aria-label="Plus" aria-hidden="true" inert>
+        <div class="drawer-heading"><strong>Plus</strong><button type="button" class="drawer-close" data-close-more aria-label="Fermer">×</button></div>
+        {% if request.user.is_staff %}
+        <a href="{% url 'biens:liste' %}" class="{% if request.resolver_match.app_name == 'biens' %}is-active{% endif %}"><span class="drawer-number">03</span>Biens en garantie</a>
+        <a href="{% url 'biens:creer' %}" class="{% if request.resolver_match.url_name == 'creer' and request.resolver_match.app_name == 'biens' %}is-active{% endif %}"><span class="drawer-number">＋</span>Enregistrer un bien</a>
+        <a href="{% url 'contrats:creer' %}" class="{% if request.resolver_match.url_name == 'creer' and request.resolver_match.app_name == 'contrats' %}is-active{% endif %}"><span class="drawer-number">＋</span>Ouvrir un contrat</a>
+        <a href="{% url 'demandes:liste_personnel' %}" class="{% if request.resolver_match.app_name == 'demandes' %}is-active{% endif %}"><span class="drawer-number">06</span>Demandes en ligne</a>
+        <a href="{% url 'comptes:site' %}" class="{% if request.resolver_match.url_name == 'site' %}is-active{% endif %}"><span class="drawer-number">◎</span>Identité du site</a>
+        {% else %}
+        <a href="{% url 'demandes:espace' %}" class="{% if request.resolver_match.url_name == 'espace' or request.resolver_match.url_name == 'detail' %}is-active{% endif %}"><span class="drawer-number">01</span>Mes demandes</a>
+        <a href="{% url 'demandes:creer' %}" class="{% if request.resolver_match.url_name == 'creer' %}is-active{% endif %}"><span class="drawer-number">＋</span>Nouvelle demande</a>
+        {% endif %}
+        <a href="{% url 'accueil_public' %}"><span class="drawer-number">⌂</span>Accueil public</a>
+        {% if request.user.is_superuser %}<a href="{% url 'admin:index' %}" class="{% if request.resolver_match.app_name == 'admin' %}is-active{% endif %}"><span class="drawer-number">⚙</span>Administration Django</a>{% endif %}
+        <a href="{% url 'comptes:profil' %}" class="{% if request.resolver_match.url_name == 'profil' %}is-active{% endif %}"><span class="drawer-number">◎</span>Mon profil</a>
+        <a href="{% url 'password_change' %}" class="{% if request.resolver_match.url_name == 'password_change' %}is-active{% endif %}"><span class="drawer-number">••</span>Sécurité et mot de passe</a>
+        <form method="post" action="{% url 'deconnexion' %}" class="logout-form">{% csrf_token %}<button type="submit" class="drawer-logout">Se déconnecter</button></form>
+    </aside>
+    <dialog class="logout-dialog" id="logout-confirmation" aria-labelledby="logout-title" aria-describedby="logout-description">
+        <span class="eyebrow">SESSION SÉCURISÉE</span>
+        <h2 id="logout-title">Se déconnecter ?</h2>
+        <p id="logout-description">Votre session sera fermée sur cet appareil.</p>
+        <div class="logout-dialog-actions">
+            <button type="button" class="button button-quiet" data-cancel-logout>Rester connecté</button>
+            <button type="button" class="button button-danger" data-confirm-logout>Se déconnecter</button>
+        </div>
+    </dialog>
+</body>
+</html>

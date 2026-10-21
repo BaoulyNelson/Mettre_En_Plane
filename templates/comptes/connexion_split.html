@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion · {{ identite_site.nom }}</title>
+    <link rel="stylesheet" href="{% static 'css/application.css' %}?v=6">
+    <script defer src="{% static 'js/application.js' %}?v=5"></script>
+</head>
+<body class="auth-page">
+    <div class="scene" aria-hidden="true"><span class="scene-cloud cloud-one"></span><span class="scene-cloud cloud-two"></span><span class="scene-cloud cloud-three"></span><img class="scene-horizon" src="{% static 'images/horizon.svg' %}" alt=""></div>
+    <main class="auth-split auth-login">
+        <section class="auth-form-side">
+            <a class="auth-brand" href="{% url 'accueil_public' %}">{% if identite_site.logo %}<img src="{{ identite_site.logo.url }}" alt="Logo {{ identite_site.nom }}">{% else %}<span class="brand-stamp">MP</span>{% endif %}<span>{{ identite_site.nom }}</span></a>
+            <p class="eyebrow">ESPACE SÉCURISÉ</p>
+            <h1>Heureux de vous revoir.</h1>
+            <p class="auth-intro">Connectez-vous pour suivre vos demandes et vos engagements.</p>
+            <section class="auth-form-panel">
+                {% if messages %}<div class="flash-stack">{% for message in messages %}<div class="flash-message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+                {% if form.errors %}<div class="flash-message error">Identifiants incorrects. Vérifiez votre nom d’utilisateur et votre mot de passe.</div>{% endif %}
+                <form method="post" class="data-form auth-form">{% csrf_token %}
+                    <div class="form-field"><label for="id_username">Nom d’utilisateur ou adresse courriel</label><input id="id_username" name="username" type="text" maxlength="254" autocomplete="username" required autofocus></div>
+                    <div class="form-field"><label for="id_password">Mot de passe</label><input id="id_password" name="password" type="password" autocomplete="current-password" required></div>
+                    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                    <button class="button button-primary button-wide" type="submit">Se connecter</button>
+                </form>
+                <a class="forgot-password" href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+            </section>
+            <p class="auth-switch">Pas encore de compte ? <a href="{% url 'inscription' %}">Créer un compte client</a></p>
+        </section>
+        <aside class="auth-story">
+            <div class="auth-story-top"><p class="eyebrow">{{ identite_site.nom }}</p><span class="story-rule"></span></div>
+            <div class="auth-story-copy"><span class="story-number">01 / 02</span><h2>{{ identite_site.slogan|default:"Un engagement clair, du premier échange au suivi." }}</h2><p>Présentez votre bien en ligne, suivez son étude, puis confirmez les conditions après vérification.</p></div>
+            <div class="auth-contact">{% if identite_site.telephone %}<span>{{ identite_site.telephone }}</span>{% endif %}{% if identite_site.email %}<span>{{ identite_site.email }}</span>{% endif %}{% if identite_site.adresse %}<span>{{ identite_site.adresse }}</span>{% endif %}</div>
+        </aside>
+    </main>
+</body>
+</html>

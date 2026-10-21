@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block titre %}Identité du site{% endblock %}
+{% block contenu %}
+<div class="page-heading"><div><p class="eyebrow">ADMINISTRATION · PRÉSENCE PUBLIQUE</p><h1>Identité du site<span class="heading-period">.</span></h1><p class="heading-note">Ces informations apparaissent sur les écrans de connexion, d’inscription et les reçus.</p></div></div>
+<section class="paper-panel form-panel account-form-panel">
+    {% if identite_site.logo %}<div class="site-logo-current"><img src="{{ identite_site.logo.url }}" alt="Logo actuel de {{ identite_site.nom }}"></div>{% endif %}
+    <form method="post" enctype="multipart/form-data" class="data-form" novalidate>{% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="form-grid">{% for field in form %}<div class="form-field {% if field.name == 'slogan' or field.name == 'adresse' %}field-wide{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>{{ field }}{% if field.help_text %}<small class="field-help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}</div>
+        <div class="form-actions"><button class="button button-primary" type="submit">Enregistrer l’identité</button></div>
+    </form>
+</section>
+{% endblock %}

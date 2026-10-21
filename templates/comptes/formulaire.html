@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block titre %}{{ titre|default:"Sécurité du compte" }}{% endblock %}
+{% block contenu %}
+<div class="page-heading"><div><p class="eyebrow">COMPTE · SÉCURITÉ</p><h1>{{ titre|default:"Sécurité du compte" }}<span class="heading-period">.</span></h1><p class="heading-note">{{ description|default:"Choisissez un mot de passe long et unique pour protéger les dossiers." }}</p></div></div>
+<section class="paper-panel form-panel account-form-panel">
+    {% if request.resolver_match.url_name == 'password_reset_confirm' and not validlink %}<div class="flash-message error">Ce lien de réinitialisation est invalide ou a expiré.</div><a class="button button-quiet" href="{% url 'password_reset' %}">Demander un nouveau lien</a>
+    {% else %}<form method="post" class="data-form" novalidate>{% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="form-grid">
+            {% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>{{ field }}{% if field.help_text %}<small class="field-help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+        </div>
+        <div class="form-actions"><button class="button button-primary" type="submit">{% if request.resolver_match.url_name == 'creer' %}Créer le compte{% elif request.resolver_match.url_name == 'password_change' %}Enregistrer le mot de passe{% elif request.resolver_match.url_name == 'password_reset_confirm' %}Définir le nouveau mot de passe{% else %}Envoyer le lien sécurisé{% endif %}</button></div>
+    </form>{% endif %}
+</section>
+{% if request.resolver_match.url_name == 'password_change' %}<p class="password-policy-note">Les mots de passe doivent respecter les règles de sécurité affichées sous les champs.</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block titre %}Vue d’ensemble{% endblock %}
+{% block contenu %}
+<div class="page-heading dashboard-heading">
+    <div>{% now "l" as jour %}<p class="eyebrow">{{ jour|upper }} · VOTRE ACTIVITÉ</p><h1>Vue d’ensemble<span class="heading-period">.</span></h1><p class="heading-note">Le point du jour sur les contrats, les échéances et les biens confiés.</p></div>
+    <div class="heading-actions"><a class="button button-quiet" href="{% url 'clients:creer' %}">+ Nouveau client</a><a class="button button-primary" href="{% url 'contrats:creer' %}">+ Ouvrir un contrat</a></div>
+</div>
+<section class="metric-grid" aria-label="Indicateurs principaux">
+    <article class="metric-card metric-blue"><span class="metric-label">CONTRATS ACTIFS</span><strong>{{ contrats_actifs }}</strong><span class="metric-foot">engagements en cours</span><i class="metric-index">01</i></article>
+    <article class="metric-card metric-paper"><span class="metric-label">CAPITAL EN COURS</span><strong>{{ capital_htg|default:"0" }} <small>HTG</small></strong><span class="metric-foot">{{ capital_usd|default:"0" }} USD en parallèle</span><i class="metric-index">02</i></article>
+    <article class="metric-card metric-paper"><span class="metric-label">BIENS EN GARANTIE</span><strong>{{ biens_en_garantie }}</strong><span class="metric-foot">dépôts conservés</span><i class="metric-index">03</i></article>
+    <article class="metric-card metric-yellow"><span class="metric-label">INVENTAIRE REVENTE</span><strong>{{ articles_en_vente }}</strong><span class="metric-foot">articles disponibles</span><i class="metric-index">04</i></article>
+</section>
+<section class="dashboard-columns">
+    <article class="paper-panel data-panel">
+        <div class="panel-heading"><div><p class="eyebrow">À SURVEILLER</p><h2>Échéances proches</h2></div><a class="text-link" href="{% url 'contrats:liste' %}">Tous les contrats <span>→</span></a></div>
+        {% if echeances %}<div class="compact-list">{% for contrat in echeances %}<a class="compact-row" href="{% url 'contrats:detail' contrat.pk %}"><span class="row-date"><strong>{{ contrat.date_echeance|date:"d" }}</strong><small>{{ contrat.date_echeance|date:"M" }}</small></span><span class="row-main"><strong>{{ contrat.client }}</strong><small>{{ contrat.numero }} · {{ contrat.bien.marque }} {{ contrat.bien.modele }}</small></span><span class="row-amount">{{ contrat.capital_restant }} {{ contrat.devise }}</span></a>{% endfor %}</div>{% else %}<div class="empty-state"><span class="empty-mark">✓</span><p>Aucune échéance dans les trois prochains jours.</p></div>{% endif %}
+    </article>
+    <article class="paper-panel data-panel overdue-panel">
+        <div class="panel-heading"><div><p class="eyebrow">ACTION REQUISE</p><h2>Après délai de grâce</h2></div><span class="count-badge">{{ en_retard|length }}</span></div>
+        {% if en_retard %}<div class="compact-list">{% for contrat in en_retard %}<a class="compact-row" href="{% url 'contrats:detail' contrat.pk %}"><span class="warning-mark">!</span><span class="row-main"><strong>{{ contrat.client }}</strong><small>{{ contrat.numero }} · {{ contrat.date_echeance|date:"d/m/Y" }}</small></span><span class="row-amount">{{ contrat.capital_restant }} {{ contrat.devise }}</span></a>{% endfor %}</div>{% else %}<div class="empty-state"><span class="empty-mark">✓</span><p>Aucun contrat au-delà du délai de grâce.</p></div>{% endif %}
+    </article>
+</section>
+<section class="paper-panel data-panel recent-panel">
+    <div class="panel-heading"><div><p class="eyebrow">MOUVEMENTS</p><h2>Paiements récents</h2></div><a class="text-link" href="{% url 'contrats:liste' %}">Consulter les contrats <span>→</span></a></div>
+    {% if paiements_recents %}<div class="table-scroll"><table><thead><tr><th>Client / contrat</th><th>Opération</th><th>Date</th><th class="align-right">Montant reçu</th></tr></thead><tbody>{% for paiement in paiements_recents %}<tr><td><strong>{{ paiement.contrat.client }}</strong><small class="table-sub">{{ paiement.contrat.numero }}</small></td><td>{{ paiement.get_type_display }}</td><td>{{ paiement.recu_le|date:"d/m/Y · H:i" }}</td><td class="align-right amount-cell">{{ paiement.montant }} {{ paiement.contrat.devise }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><p>Aucun mouvement enregistré pour le moment.</p></div>{% endif %}
+</section>
+{% endblock %}

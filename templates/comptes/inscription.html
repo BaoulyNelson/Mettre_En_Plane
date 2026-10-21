@@ -1,0 +1,35 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Créer mon compte · {{ identite_site.nom }}</title>
+    <link rel="stylesheet" href="{% static 'css/application.css' %}?v=6">
+    <script defer src="{% static 'js/application.js' %}?v=5"></script>
+</head>
+<body class="auth-page">
+    <div class="scene" aria-hidden="true"><span class="scene-cloud cloud-one"></span><span class="scene-cloud cloud-two"></span><span class="scene-cloud cloud-three"></span><img class="scene-horizon" src="{% static 'images/horizon.svg' %}" alt=""></div>
+    <main class="auth-split auth-signup">
+        <section class="auth-form-side">
+            <a class="auth-brand" href="{% url 'accueil_public' %}">{% if identite_site.logo %}<img src="{{ identite_site.logo.url }}" alt="Logo {{ identite_site.nom }}">{% else %}<span class="brand-stamp">MP</span>{% endif %}<span>{{ identite_site.nom }}</span></a>
+            <p class="eyebrow">COMPTE CLIENT</p>
+            <h1>Créer mon accès.</h1>
+            <p class="auth-intro">Un téléphone et un mot de passe suffisent. Le personnel vérifiera votre identité et votre bien avant tout contrat.</p>
+            <form method="post" enctype="multipart/form-data" class="data-form auth-form" novalidate>{% csrf_token %}
+                {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+                <div class="form-grid">
+                    {% for field in form %}<div class="form-field {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">{% if field.field.widget.input_type == 'checkbox' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark">*</span>{% endif %}</label>{{ field }}{% endif %}{% if field.help_text %}<small class="field-help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+                </div>
+                <button class="button button-primary button-wide" type="submit">Créer mon compte</button>
+            </form>
+            <p class="auth-switch">Vous avez déjà un compte ? <a href="{% url 'connexion' %}">Se connecter</a></p>
+        </section>
+        <aside class="auth-story">
+            <div class="auth-story-top"><p class="eyebrow">{{ identite_site.nom }}</p><span class="story-rule"></span></div>
+            <div class="auth-story-copy"><span class="story-number">01 / 02</span><h2>{{ identite_site.slogan|default:"Un engagement clair, du premier échange au suivi." }}</h2><p>Décrivez votre appareil, indiquez le montant souhaité et suivez chaque mise à jour depuis votre espace.</p></div>
+            <div class="auth-contact">{% if identite_site.telephone %}<span>{{ identite_site.telephone }}</span>{% endif %}{% if identite_site.email %}<span>{{ identite_site.email }}</span>{% endif %}{% if identite_site.adresse %}<span>{{ identite_site.adresse }}</span>{% endif %}</div>
+        </aside>
+    </main>
+</body>
+</html>

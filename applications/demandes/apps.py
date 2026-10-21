@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class DemandesConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "applications.demandes"
+    verbose_name = "Demandes en ligne"

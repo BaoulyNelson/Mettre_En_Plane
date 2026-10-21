@@ -1,0 +1,175 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{{ identite_site.nom }} · Mise en gage</title>
+    <meta name="description" content="Découvrez comment présenter un bien, suivre votre demande et échanger avec l’équipe de {{ identite_site.nom }}.">
+    <meta name="theme-color" content="#9dc0e4">
+    {% if identite_site.logo %}<link rel="icon" href="{{ identite_site.logo.url }}">{% else %}<link rel="icon" href="{% static 'images/logo.png' %}">{% endif %}
+    <link rel="stylesheet" href="{% static 'css/application.css' %}?v=14">
+    <script defer src="{% static 'js/application.js' %}?v=6"></script>
+</head>
+<body class="auth-page public-home-page">
+    <div class="scene" aria-hidden="true"><span class="scene-cloud cloud-one"></span><span class="scene-cloud cloud-two"></span><span class="scene-cloud cloud-three"></span><img class="scene-horizon" src="{% static 'images/horizon.svg' %}" alt=""></div>
+    <header class="public-home-header" id="haut">
+        <a class="auth-brand" href="{% url 'accueil_public' %}">{% if identite_site.logo %}<img src="{{ identite_site.logo.url }}" alt="Logo {{ identite_site.nom }}">{% else %}<span class="brand-stamp">MP</span>{% endif %}<span>{{ identite_site.nom }}</span></a>
+        <nav class="public-home-nav" aria-label="Navigation de la page">
+            <a href="#fonctionnement">Comment ça marche</a>
+            <a href="#preparer">Préparer ma demande</a>
+            <a href="#faq">FAQ</a>
+        </nav>
+        {% if request.user.is_authenticated %}
+        <a class="public-login-link" href="{% url 'comptes:profil' %}" aria-label="Mon profil" title="Mon profil">
+        {% else %}
+        <a class="public-login-link" href="{% url 'connexion' %}" aria-label="Se connecter" title="Se connecter">
+        {% endif %}
+            <svg class="public-login-user-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c.5-3.5 3-5.5 7-5.5s6.5 2 7 5.5"></path></svg>
+        </a>
+    </header>
+    <main class="public-home">
+        <section class="public-home-hero">
+            <div class="public-home-main">
+                <p class="eyebrow">SERVICE DE MISE EN GAGE · HAÏTI</p>
+                <h1>{{ identite_site.nom }}</h1>
+                <p class="public-home-tagline">{{ identite_site.slogan|default:"Une demande claire, un suivi étape par étape." }}</p>
+                <p class="auth-intro">Présentez votre bien et le montant souhaité. L’équipe étudie votre dossier et vous contacte pour la suite.</p>
+                <div class="public-home-actions">
+                    <a class="button button-primary button-wide" href="{% url 'inscription' %}">Présenter un bien</a>
+                    <a class="button button-quiet button-wide" href="{% url 'connexion' %}"><span class="public-login-icon" aria-hidden="true">◎</span> J’ai déjà un compte</a>
+                </div>
+                <p class="public-home-note">Une demande ne garantit pas l’obtention d’un prêt. Toute proposition est étudiée par l’équipe avant la conclusion d’un contrat.</p>
+            </div>
+            <figure class="public-home-visual" aria-label="Identité de {{ identite_site.nom }}">
+                {% if identite_site.logo %}<img src="{{ identite_site.logo.url }}" alt="Logo {{ identite_site.nom }}">{% else %}<img src="{% static 'images/logo.png' %}" alt="Logo Mete nan plàn">{% endif %}
+                <figcaption><span>METE NAN PLÀN</span><span>HAÏTI · DEMANDE EN LIGNE</span></figcaption>
+            </figure>
+            <a class="public-scroll-link" href="#fonctionnement">Découvrir les étapes <span aria-hidden="true">↓</span></a>
+        </section>
+
+        <section class="public-section" id="fonctionnement">
+            <div class="public-section-heading">
+                <p class="eyebrow">UN PARCOURS SIMPLE</p>
+                <h2>Comment ça marche&nbsp;?</h2>
+                <p>Vous préparez les informations, l’équipe examine la demande, puis vous retrouvez son évolution dans votre espace.</p>
+            </div>
+            <div class="public-steps">
+                <article class="public-step">
+                    <span class="public-step-number">01</span>
+                    <h3>Créez votre espace</h3>
+                    <p>Inscrivez-vous pour déposer votre demande et retrouver son suivi au même endroit.</p>
+                </article>
+                <article class="public-step">
+                    <span class="public-step-number">02</span>
+                    <h3>Décrivez votre bien</h3>
+                    <p>Indiquez sa catégorie, sa marque, son modèle, son état et le montant que vous souhaitez.</p>
+                </article>
+                <article class="public-step">
+                    <span class="public-step-number">03</span>
+                    <h3>Suivez l’étude</h3>
+                    <p>L’équipe examine les informations et met à jour le statut de votre demande dans votre espace client.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="public-section public-prepare-section" id="preparer">
+            <div class="public-prepare-copy">
+                <p class="eyebrow">AVANT DE COMMENCER</p>
+                <h2>Une demande bien préparée facilite l’échange.</h2>
+                <p>Quelques détails sur l’appareil et son état aident l’équipe à comprendre votre proposition. Vous pourrez suivre les mises à jour après l’envoi.</p>
+                <a class="button button-primary" href="{% url 'inscription' %}">Créer mon compte</a>
+            </div>
+            <div class="public-checklist" aria-label="Informations utiles à préparer">
+                <h3>À garder près de vous</h3>
+                <ul>
+                    <li>La catégorie, la marque et le modèle du bien</li>
+                    <li>Une description de son état et de ses accessoires</li>
+                    <li>Une preuve de propriété disponible</li>
+                    <li>Le montant souhaité et la devise (HTG ou USD)</li>
+                    <li>Une photo du bien, si vous en avez une</li>
+                </ul>
+                <p>Les photos sont facultatives. Pour les appareils concernés, précisez également s’ils sont déverrouillés.</p>
+            </div>
+        </section>
+
+        <section class="public-section public-category-section">
+            <div class="public-section-heading">
+                <p class="eyebrow">BIENS À PRÉSENTER</p>
+                <h2>Quel type de bien pouvez-vous décrire&nbsp;?</h2>
+                <p>Le formulaire accepte plusieurs catégories. Chaque proposition est ensuite examinée individuellement.</p>
+            </div>
+            <ul class="public-category-list">
+                <li>Téléphones</li>
+                <li>Matériel informatique</li>
+                <li>Appareils électroniques</li>
+                <li>Autres biens à préciser</li>
+            </ul>
+        </section>
+
+        <section class="public-section public-faq-section" id="faq">
+            <div class="public-section-heading">
+                <p class="eyebrow">À SAVOIR</p>
+                <h2>Questions fréquentes</h2>
+            </div>
+            <div class="public-faq-list">
+                <details>
+                    <summary>Envoyer une demande signifie-t-il que le prêt est accepté&nbsp;?</summary>
+                    <p>Non. L’envoi permet à l’équipe d’étudier les informations. Le bien et les conditions doivent être vérifiés avant toute décision et tout contrat.</p>
+                </details>
+                <details>
+                    <summary>Dois-je créer un compte pour présenter un bien&nbsp;?</summary>
+                    <p>Oui. Votre espace client sert à envoyer une demande et à consulter son statut ainsi que les réponses de l’équipe.</p>
+                </details>
+                <details>
+                    <summary>La photo du bien est-elle obligatoire&nbsp;?</summary>
+                    <p>Non, vous pouvez envoyer le formulaire sans photo. Une description précise de l’état, de la marque et du modèle reste utile à l’étude.</p>
+                </details>
+                <details>
+                    <summary>Quand les conditions me seront-elles communiquées&nbsp;?</summary>
+                    <p>L’équipe examine d’abord votre demande. Si une proposition peut être faite, les détails sont à confirmer avec elle avant la signature d’un éventuel contrat.</p>
+                </details>
+                <details>
+                    <summary>Comment puis-je suivre ma demande&nbsp;?</summary>
+                    <p>Connectez-vous à votre espace client pour consulter son statut et les informations communiquées par l’équipe.</p>
+                </details>
+            </div>
+        </section>
+
+        <section class="public-contact-cta">
+            <p class="eyebrow">PRÊT À COMMENCER&nbsp;?</p>
+            <h2>Présentez votre bien quand vous le souhaitez.</h2>
+            <p>Créez votre espace client pour préparer votre demande et garder son suivi à portée de main.</p>
+            <a class="button button-primary" href="{% url 'inscription' %}">Créer un compte client</a>
+        </section>
+    </main>
+    <footer class="public-home-footer">
+        <div class="public-footer-grid">
+            <div class="public-footer-brand">
+                <a class="auth-brand" href="{% url 'accueil_public' %}">{% if identite_site.logo %}<img src="{{ identite_site.logo.url }}" alt="">{% else %}<span class="brand-stamp">MP</span>{% endif %}<span>{{ identite_site.nom }}</span></a>
+                <p>{{ identite_site.slogan|default:"Un engagement clair, du premier échange au suivi." }}</p>
+            </div>
+            <div class="public-footer-column">
+                <h2>Explorer</h2>
+                <a href="#fonctionnement">Comment ça marche</a>
+                <a href="#preparer">Préparer ma demande</a>
+                <a href="#faq">Questions fréquentes</a>
+            </div>
+            <div class="public-footer-column">
+                <h2>Mon espace</h2>
+                <a href="{% url 'inscription' %}">Créer un compte</a>
+                <a href="{% url 'connexion' %}">Se connecter</a>
+                <a href="{% url 'password_reset' %}">Mot de passe oublié</a>
+            </div>
+            <div class="public-footer-column public-footer-contact">
+                <h2>Nous contacter</h2>
+                {% if identite_site.telephone %}<a href="tel:{{ identite_site.telephone }}">{{ identite_site.telephone }}</a>{% endif %}
+                {% if identite_site.email %}<a href="mailto:{{ identite_site.email }}">{{ identite_site.email }}</a>{% endif %}
+                {% if identite_site.adresse %}<p>{{ identite_site.adresse }}</p>{% endif %}
+                {% if not identite_site.telephone and not identite_site.email and not identite_site.adresse %}<p>Les coordonnées seront affichées ici dès qu’elles seront renseignées.</p>{% endif %}
+            </div>
+        </div>
+        <div class="public-footer-bottom"><span>© {% now "Y" %} {{ identite_site.nom }}</span><span>Les demandes sont étudiées individuellement et ne constituent pas une approbation de prêt.</span><a class="public-back-to-top" href="#haut" aria-label="Retour en haut de la page" title="Retour en haut"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5m-6 6 6-6 6 6"></path></svg></a></div>
+    </footer>
+</body>
+</html>

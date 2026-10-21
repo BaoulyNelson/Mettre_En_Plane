@@ -1,0 +1,7 @@
+Bonjour {{ user.get_username }},
+
+Une demande de réinitialisation du mot de passe de votre compte Mete nan plàn a été reçue.
+Pour choisir un nouveau mot de passe, ouvrez ce lien sécurisé :
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.
